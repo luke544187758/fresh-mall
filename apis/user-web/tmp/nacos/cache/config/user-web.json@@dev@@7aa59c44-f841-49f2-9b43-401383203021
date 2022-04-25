@@ -1,0 +1,29 @@
+{
+  "name": "user-web",
+  "mode": "debug",
+  "port": 8081,
+  "version": "v0.0.1",
+  "start_time": "2022-03-20",
+  "machine_id": 1,
+  "auth": {
+    "jwt_expire": 168,
+    "secret": "zelda"
+  },
+  "log": {
+    "level": "debug",
+    "mode": "dev",
+    "filename": "user_app.log",
+    "max_size": 200,
+    "max_age": 30,
+    "max_backups": 7
+  },
+  "consul": {
+    "host": "127.0.0.1",
+    "port": 8500
+  },
+  "user_service": {
+    "name": "user_srv",
+    "host": "127.0.0.1",
+    "port": 50051
+  }
+}
