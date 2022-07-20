@@ -1,4 +1,4 @@
-host: "127.0.0.1"
+host: "192.168.0.100"
 port: 8848
 name_space: "7aa59c44-f841-49f2-9b43-401383203021"
 user_name: "nacos"

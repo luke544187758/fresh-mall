@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"database/sql"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -19,7 +18,7 @@ func NewUserService() *UserService {
 }
 
 func (u *UserService) GetUserList(ctx context.Context, req *proto.PageInfoRequest) (rsp *proto.UserListResponse, err error) {
-	users, err := mysql.GetUserList(req.Page, req.PageSize)
+	users, err := mysql.GetUserList(req.Page, req.PerSize)
 	if err != nil {
 		return nil, err
 	}
@@ -33,9 +32,9 @@ func (u *UserService) GetUserList(ctx context.Context, req *proto.PageInfoReques
 			Password: user.Password,
 			Mobile:   user.Mobile,
 			NickName: user.NickName,
-			Gender:   user.Gender,
-			Address:  user.Address,
-			Birthday: user.Birthday.String(),
+			Gender:   user.Gender.String,
+			Address:  user.Address.String,
+			Birthday: user.Birthday.Time.String(),
 		}
 		rsp.Data = append(rsp.Data, &info)
 	}
@@ -52,11 +51,13 @@ func (u *UserService) GetUserByMobile(ctx context.Context, req *proto.UserMobile
 	rsp = new(proto.UserInfoResponse)
 	user, err := mysql.GetUserByMobile(req.Mobile)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, status.Errorf(codes.NotFound, "cannot find the user")
-		}
 		return nil, err
 	}
+
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "the user is not found")
+	}
+
 	if ctx.Err() == context.Canceled {
 		return nil, status.Error(codes.Canceled, "request is canceled")
 	}
@@ -65,11 +66,11 @@ func (u *UserService) GetUserByMobile(ctx context.Context, req *proto.UserMobile
 	}
 	rsp.Id = user.ID
 	rsp.Mobile = user.Mobile
-	rsp.Birthday = user.Birthday.Format("2006-01-02")
+	rsp.Birthday = user.Birthday.Time.Format("2006-01-02")
 	rsp.NickName = user.NickName
-	rsp.Gender = user.Gender
+	rsp.Gender = user.Gender.String
 	rsp.Password = user.Password
-	rsp.Address = user.Address
+	rsp.Address = user.Address.String
 	rsp.Role = user.Role
 	return rsp, nil
 }
@@ -78,11 +79,13 @@ func (u *UserService) GetUserByID(ctx context.Context, req *proto.UserIdRequest)
 	rsp = new(proto.UserInfoResponse)
 	user, err := mysql.GetUserByID(req.Id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, status.Errorf(codes.NotFound, "cannot find the user")
-		}
 		return nil, err
 	}
+
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "the user is not found")
+	}
+
 	if ctx.Err() == context.Canceled {
 		return nil, status.Error(codes.Canceled, "request is canceled")
 	}
@@ -92,11 +95,11 @@ func (u *UserService) GetUserByID(ctx context.Context, req *proto.UserIdRequest)
 
 	rsp.Id = user.ID
 	rsp.Mobile = user.Mobile
-	rsp.Birthday = user.Birthday.String()
+	rsp.Birthday = user.Birthday.Time.String()
 	rsp.NickName = user.NickName
-	rsp.Gender = user.Gender
+	rsp.Gender = user.Gender.String
 	rsp.Password = user.Password
-	rsp.Address = user.Address
+	rsp.Address = user.Address.String
 	rsp.Role = user.Role
 	return rsp, nil
 }
@@ -135,6 +138,27 @@ func (u *UserService) ModifyUser(ctx context.Context, req *proto.ModifyUserInfoR
 	if err = mysql.ModifyUserInfo(req.Id, req.NickName, req.Gender, req.Birthday); err != nil {
 		return nil, err
 	}
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+	return nil, nil
+}
+
+func (u *UserService) RemoveUser(ctx context.Context, req *proto.UserIdRequest) (*emptypb.Empty, error) {
+	user, err := mysql.GetUserByID(req.Id)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "the user is not found")
+	}
+	if err = mysql.RemoveUserInfo(req.Id); err != nil {
+		return nil, err
+	}
+
 	if ctx.Err() == context.Canceled {
 		return nil, status.Error(codes.Canceled, "request is canceled")
 	}

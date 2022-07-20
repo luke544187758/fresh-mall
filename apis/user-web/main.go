@@ -13,6 +13,7 @@ import (
 	"luke544187758/user-web/services"
 	"luke544187758/user-web/settings"
 	"luke544187758/user-web/utils"
+	"luke544187758/user-web/utils/register/consul"
 	"luke544187758/user-web/validators"
 	"net/http"
 	"os"
@@ -46,6 +47,14 @@ func main() {
 		return
 	}
 	zap.L().Info("user service init success...")
+
+	cli := consul.NewRegistry(settings.Conf.ConsulConfig.Host, settings.Conf.ConsulConfig.Port)
+	err := cli.Register(settings.Conf.Host, settings.Conf.Port, settings.Conf.Name, settings.Conf.Tags)
+	if err != nil {
+		zap.L().Panic("user-web register failed", zap.Error(err))
+	}
+	zap.L().Info("user-web register success...")
+
 	// 注册验证器
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		_ = v.RegisterValidation("mobile", validators.ValidateMobile)
@@ -90,6 +99,10 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM) // 此处不会阻塞
 	<-quit                                               // 阻塞在此，当接收到上述两种信号时才会往下执行
 	zap.L().Info("Shutdown Server ...")
+	if err := cli.DeRegister(settings.Conf.Name, settings.Conf.Host, settings.Conf.Port); err != nil {
+		zap.L().Error("user-web deregister failed", zap.Error(err))
+	}
+	zap.L().Info("user-web deregister success...")
 
 	// 创建一个5秒超时的 context
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

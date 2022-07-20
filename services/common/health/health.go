@@ -34,6 +34,21 @@ func Register(ccfg *ConsulConfig, scfg *ServiceConfig) {
 	}
 }
 
+func Deregister(ccfg *ConsulConfig, scfg *ServiceConfig) error {
+	cfg := api.DefaultConfig()
+	cfg.Address = fmt.Sprintf("%s:%d", ccfg.Host, ccfg.Port)
+
+	cli, err := api.NewClient(cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := cli.Agent().ServiceDeregister(fmt.Sprintf("%s-%s-%d", scfg.Name, scfg.Host, scfg.Port)); err != nil {
+		return err
+	}
+	return nil
+}
+
 func AllServices(ccfg *ConsulConfig) {
 	cfg := api.DefaultConfig()
 	cfg.Address = fmt.Sprintf("%s:%d", ccfg.Host, ccfg.Port)

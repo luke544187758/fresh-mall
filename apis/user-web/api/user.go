@@ -100,13 +100,14 @@ func PasswordLogin(ctx *gin.Context) {
 		return
 	}
 	// 验证码
-	if !store.Verify(form.CaptchaID, form.Captcha, false) {
-		message.ResponseError(ctx, message.CodeInvalidCaptcha)
-		return
-	}
+	//if !store.Verify(form.CaptchaID, form.Captcha, false) {
+	//	message.ResponseError(ctx, message.CodeInvalidCaptcha)
+	//	return
+	//}
 
 	rsp, err := global.UserServiceClient.GetUserByMobile(context.Background(), &proto.UserMobileRequest{Mobile: form.Mobile})
 	if err != nil {
+		fmt.Println(err)
 		if e, ok := status.FromError(err); ok {
 			switch e.Code() {
 			case codes.NotFound:

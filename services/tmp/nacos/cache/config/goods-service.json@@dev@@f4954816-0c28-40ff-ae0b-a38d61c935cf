@@ -1,0 +1,22 @@
+{
+  "name": "goods_srv",
+  "tags": ["luke", "左岸", "golang", "goods-srv"],
+  "mode": "dev",
+  "host": "192.168.0.100",
+  "port": 55530,
+  "start_time": "2022-03-20",
+  "machine_id": 1,
+  "mysql": {
+    "host": "127.0.0.1",
+    "port": 13306,
+    "user": "root",
+    "password": "544187758",
+    "dbname": "mall-goods-srv",
+    "max_open_conns": 200,
+    "max_idle_conns": 50
+  },
+  "consul": {
+    "host": "192.168.0.100",
+    "port": 8500
+  }
+}

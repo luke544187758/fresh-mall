@@ -10,6 +10,7 @@ service User {
   rpc GetUserByID(UserIdRequest) returns(UserInfoResponse); // 通过id查询用户
   rpc CreateUser(UserInfoRequest) returns(CreateUserResponse);  // 创建用户
   rpc ModifyUser(ModifyUserInfoRequest) returns(google.protobuf.Empty); // 更改用户信息
+  rpc RemoveUser(UserIdRequest) returns(google.protobuf.Empty); // 删除用户
   rpc CheckPassword(PasswordCheckRequest) returns(CheckPasswordResponse); //检查密码是否正确
 }
 
@@ -20,7 +21,7 @@ message PasswordCheckRequest{
 
 message PageInfoRequest{
   uint32 page = 1;
-  uint32  pageSize = 2;
+  uint32  perSize = 2;
 }
 
 message UserMobileRequest{

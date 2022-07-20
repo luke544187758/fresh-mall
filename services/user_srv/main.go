@@ -3,12 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"luke544187758/health"
 	"luke544187758/user-srv/dao/mysql"
-	"luke544187758/user-srv/logger"
 	"luke544187758/user-srv/logic"
 	"luke544187758/user-srv/proto"
 	"luke544187758/user-srv/settings"
@@ -35,24 +33,18 @@ func main() {
 		return
 	}
 
-	if err := logger.Init(settings.Conf.LogConfig); err != nil {
-		fmt.Printf("init logger failed, err:%v\n", err)
-		return
-	}
-	zap.L().Info("logger init success...")
-
 	if err := mysql.Init(settings.Conf.MySQLConfig); err != nil {
 		fmt.Printf("init mysql failed, err:%v\n", err)
 		return
 	}
-	zap.L().Info("mysql init success...")
+	fmt.Println("mysql init success...")
 
 	var srvPort int
 	var err error
 	if settings.Conf.Mode == "dev" {
 		srvPort, err = utils.GetFreePort()
 		if err != nil {
-			zap.L().Error("utils.GetFreePort failed", zap.Error(err))
+			fmt.Printf("utils.GetFreePort failed, err:%v\n", err)
 		}
 		if srvPort == 0 {
 			srvPort = settings.Conf.Port
@@ -70,7 +62,7 @@ func main() {
 		Port:                           srvPort,
 		Host:                           settings.Conf.Host,
 		Name:                           settings.Conf.Name,
-		Tags:                           []string{"user-service"},
+		Tags:                           settings.Conf.Tags,
 		Timeout:                        "5s",
 		Interval:                       "5s",
 		DeregisterCriticalServiceAfter: "15s",
@@ -83,14 +75,14 @@ func main() {
 	grpc_health_v1.RegisterHealthServer(grpcServer, &HealthImpl{})
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", settings.Conf.Host, srvPort))
 	if err != nil {
-		zap.L().Error("cannot start server", zap.Error(err))
+		fmt.Printf("cannot start server, err:%v\n", err)
 		return
 	}
 	defer listener.Close()
 
-	zap.L().Info("user service start....", zap.String("address", listener.Addr().String()))
+	fmt.Println("user service start....", "address:", listener.Addr().String())
 	if err := grpcServer.Serve(listener); err != nil {
-		zap.L().Error("cannot start server", zap.Error(err))
+		fmt.Printf("cannot start server, err:%v\n", err)
 		return
 	}
 }

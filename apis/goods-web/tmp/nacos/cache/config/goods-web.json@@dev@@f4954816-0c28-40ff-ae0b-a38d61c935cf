@@ -1,0 +1,29 @@
+{
+  "name": "goods-web",
+  "mode": "debug",
+  "tags": ["luke", "左岸", "golang", "goods-web"],
+  "host": "192.168.0.100",
+  "port": 8084,
+  "version": "v0.0.1",
+  "start_time": "2022-03-20",
+  "machine_id": 1,
+  "auth": {
+    "jwt_expire": 168,
+    "secret": "zelda"
+  },
+  "log": {
+    "level": "debug",
+    "mode": "dev",
+    "filename": "goods_app.log",
+    "max_size": 200,
+    "max_age": 30,
+    "max_backups": 7
+  },
+  "consul": {
+    "host": "192.168.0.100",
+    "port": 8500
+  },
+  "goods_service": {
+    "name": "goods_srv"
+  }
+}

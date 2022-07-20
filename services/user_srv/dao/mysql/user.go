@@ -66,3 +66,10 @@ func ModifyUserInfo(id int64, nickname, gender, birthday string) error {
 	_, err := db.Exec(sqlCmd, nickname, gender, birthday, id)
 	return err
 }
+
+//RemoveUserInfo 删除用户
+func RemoveUserInfo(id int64) error {
+	sqlCmd := `delete from user where id=?`
+	_, err := db.Exec(sqlCmd, id)
+	return err
+}
