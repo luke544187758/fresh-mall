@@ -1,0 +1,7 @@
+host: "192.168.0.100"
+port: 8848
+name_space: "fecd790f-56ed-43b2-b261-f17faf404c21"
+user_name: "nacos"
+password: "nacos"
+data_id: "order-service.json"
+group: "dev"
