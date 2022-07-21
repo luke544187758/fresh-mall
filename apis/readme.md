@@ -22,3 +22,12 @@
 - 负载均衡
 - 集成配置中心nacos，viper只作为本地读取nacos配置，服务其它相关配置均放在nacos中
 - 注册goods-web服务到注册中心
+
+## oss 文件管理
+- 集成gin框架，来完成web服务的搭建
+- viper 配置
+- zap日志配置
+- jwt集成，进行权限的认证
+- 集成配置中心nacos，viper只作为本地读取nacos配置，服务其它相关配置均放在nacos中
+- 集成阿里云oss服务
+- 注册goods-web服务到注册中心

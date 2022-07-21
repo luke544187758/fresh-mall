@@ -1,0 +1,7 @@
+host: "192.168.0.100"
+port: 8848
+name_space: "bdd29a2b-cf46-45ba-91a2-104d6ecf2289"
+user_name: "nacos"
+password: "nacos"
+data_id: "inventory-service.json"
+group: "dev"

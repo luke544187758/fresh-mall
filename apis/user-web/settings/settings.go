@@ -105,8 +105,8 @@ func Init() (err error) {
 		NamespaceId:         Nacos.NameSpace, // 如果需要支持多namespace，我们可以场景多个client,它们有不同的NamespaceId。当namespace是public时，此处填空字符串。
 		TimeoutMs:           5000,
 		NotLoadCacheAtStart: true,
-		LogDir:              "./tmp/nacos/log",
-		CacheDir:            "./tmp/nacos/cache",
+		LogDir:              "../tmp/nacos/log",
+		CacheDir:            "../tmp/nacos/cache",
 		LogLevel:            "debug",
 		Username:            Nacos.UserName,
 		Password:            Nacos.Password,

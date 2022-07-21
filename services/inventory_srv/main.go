@@ -6,13 +6,14 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"luke544187758/goods-srv/dao/mysql"
-	"luke544187758/goods-srv/logic"
-	"luke544187758/goods-srv/pkg/snowflake"
-	"luke544187758/goods-srv/proto"
-	"luke544187758/goods-srv/settings"
-	"luke544187758/goods-srv/utils"
 	"luke544187758/health"
+	"luke544187758/inventory-srv/dao/mysql"
+	"luke544187758/inventory-srv/dao/redis"
+	"luke544187758/inventory-srv/logic"
+	"luke544187758/inventory-srv/pkg/snowflake"
+	"luke544187758/inventory-srv/proto"
+	"luke544187758/inventory-srv/settings"
+	"luke544187758/inventory-srv/utils"
 	"net"
 	"os"
 	"os/signal"
@@ -44,6 +45,13 @@ func main() {
 		return
 	}
 	fmt.Println("mysql init success...")
+
+	if err := redis.Init(settings.Conf.RedisConfig); err != nil {
+		fmt.Printf("init redis failed, err: %v \n", err)
+		return
+	}
+	defer redis.Close()
+	fmt.Println("redis init success...")
 
 	if err := snowflake.Init(settings.Conf.StartTime, settings.Conf.MachineID); err != nil {
 		fmt.Printf("init snowflake failed, err:%v\n", err)
@@ -81,8 +89,8 @@ func main() {
 	health.Register(ccfg, scfg)
 
 	grpcServer := grpc.NewServer()
-	service := logic.NewGoodsService()
-	proto.RegisterGoodsServer(grpcServer, service)
+	service := logic.NewInventoryService()
+	proto.RegisterInventoryServer(grpcServer, service)
 	grpc_health_v1.RegisterHealthServer(grpcServer, &HealthImpl{})
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", settings.Conf.Host, srvPort))
 	if err != nil {
@@ -91,7 +99,7 @@ func main() {
 	}
 	defer listener.Close()
 
-	fmt.Println("goods service start....", "address:", listener.Addr().String())
+	fmt.Println("inventory service start....", "address:", listener.Addr().String())
 
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
@@ -105,9 +113,9 @@ func main() {
 	<-quit
 	zap.L().Info("Shutdown Server ...")
 	if err := health.Deregister(ccfg, scfg); err != nil {
-		zap.L().Error("goods service deregister failed", zap.Error(err))
+		zap.L().Error("inventory-srv deregister failed", zap.Error(err))
 	}
-	zap.L().Info("goods service deregister success...")
+	zap.L().Info("inventory-srv deregister success...")
 
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

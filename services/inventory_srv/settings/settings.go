@@ -18,37 +18,33 @@ var (
 type AppConfig struct {
 	Port      int      `json:"port"`
 	MachineID int64    `json:"machine_id"`
-	Name      string   `json:"name"`
 	Host      string   `json:"host"`
+	Name      string   `json:"name"`
 	Mode      string   `json:"mode"`
-	Version   string   `json:"version"`
 	StartTime string   `json:"start_time"`
 	Tags      []string `json:"tags"`
 
-	*JWTConfig    `json:"auth"`
-	*LogConfig    `json:"log"`
+	*MySQLConfig  `json:"mysql"`
 	*ConsulConfig `json:"consul"`
-	*GoodsService `json:"goods_service"`
+	*RedisConfig  `json:"redis"`
 }
 
-type JWTConfig struct {
-	JWTExpire int64  `json:"jwt_expire"`
-	Secret    string `json:"secret"`
+type MySQLConfig struct {
+	Port         int    `json:"port"`
+	MaxOpenConns int    `json:"max_open_conns"`
+	MaxIdleConns int    `json:"max_idle_conns"`
+	Host         string `json:"host"`
+	User         string `json:"user"`
+	Password     string `json:"password"`
+	DB           string `json:"dbname"`
 }
 
-type LogConfig struct {
-	Level      string `json:"level"`
-	Filename   string `json:"filename"`
-	Mode       string `json:"mode"`
-	MaxSize    int    `json:"max_size"`
-	MaxAge     int    `json:"max_age"`
-	MaxBackups int    `json:"max_backups"`
-}
-
-type GoodsService struct {
-	Port int    `json:"port"`
-	Name string `json:"name"`
-	Host string `json:"host"`
+type RedisConfig struct {
+	Port     int    `json:"port"`
+	DB       int    `json:"db"`
+	PoolSize int    `json:"pool_size"`
+	Host     string `json:"host"`
+	Password string `json:"password"`
 }
 
 type ConsulConfig struct {
@@ -77,7 +73,7 @@ func Init() (err error) {
 		return
 	}
 
-	// 把读取到的配置信息反序列化到 Conf 变量中
+	// 把读取到的配置信息反序列化到 Nacos 变量中
 	if err := viper.Unmarshal(Nacos); err != nil {
 		fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
 	}
@@ -131,21 +127,6 @@ func Init() (err error) {
 	if err != nil {
 		fmt.Printf("json.Unmarshal failed, err:%v\n", err)
 	}
-
-	//err = configClient.ListenConfig(vo.ConfigParam{
-	//	DataId: Nacos.DataID,
-	//	Group:  Nacos.Group,
-	//	OnChange: func(namespace, group, dataId, data string) {
-	//		fmt.Println("group:" + group + ", dataId:" + dataId + ", data:" + data)
-	//		err = json.Unmarshal([]byte(content), Conf)
-	//		if err != nil {
-	//			fmt.Printf("json.Unmarshal failed, err:%v\n", err)
-	//		}
-	//	},
-	//})
-	//if err != nil {
-	//	return err
-	//}
 
 	return nil
 }
