@@ -46,9 +46,7 @@ type LogConfig struct {
 }
 
 type UserService struct {
-	Port int    `json:"port"`
 	Name string `json:"name"`
-	Host string `json:"host"`
 }
 
 type ConsulConfig struct {

@@ -27,8 +27,8 @@ func GetInventoryWithGoods(goods int64) (*models.Inventory, error) {
 
 //CreateInventory 创建库存信息
 func CreateInventory(inv *models.Inventory) error {
-	sqlCmd := `INSERT INTO inventory (goods,stocks,is_deleted,version,add_time,update_time) VALUES (?,?,?,?,?,?)`
-	_, err := db.Exec(sqlCmd, inv.Goods, inv.Stocks, inv.IsDeleted, inv.Version, inv.AddTime, inv.UpdateTime)
+	sqlCmd := `INSERT INTO inventory (id,goods,stocks,is_deleted,version,add_time,update_time) VALUES (?,?,?,?,?,?,?)`
+	_, err := db.Exec(sqlCmd, inv.ID, inv.Goods, inv.Stocks, inv.IsDeleted, inv.Version, inv.AddTime, inv.UpdateTime)
 	return err
 }
 

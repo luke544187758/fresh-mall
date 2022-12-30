@@ -51,17 +51,11 @@ func main() {
 		return
 	}
 
-	if err := services.GoodsServiceInit(); err != nil {
-		fmt.Printf("init goods service failed, err:%v", err)
+	if err := services.ServicesInit(); err != nil {
+		fmt.Printf("init services failed, err:%v", err)
 		return
 	}
-	fmt.Println("goods service init success...")
-
-	if err := services.InventoryServiceInit(); err != nil {
-		fmt.Printf("init inventory service failed, err:%v", err)
-		return
-	}
-	fmt.Println("inventory service init success...")
+	fmt.Println("all services init success...")
 
 	var srvPort int
 	var err error
@@ -104,7 +98,7 @@ func main() {
 	}
 	defer listener.Close()
 
-	fmt.Println("goods service start....", "address:", listener.Addr().String())
+	fmt.Println("order service start....", "address:", listener.Addr().String())
 
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
@@ -117,10 +111,10 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	zap.L().Info("Shutdown Server ...")
-	if err := health.Deregister(ccfg, scfg); err != nil {
-		zap.L().Error("goods service deregister failed", zap.Error(err))
+	if err = health.Deregister(ccfg, scfg); err != nil {
+		zap.L().Error("order service deregister failed", zap.Error(err))
 	}
-	zap.L().Info("goods service deregister success...")
+	zap.L().Info("order service deregister success...")
 
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

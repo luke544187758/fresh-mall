@@ -283,6 +283,7 @@ func (*OrderService) OrderList(ctx context.Context, req *proto.OrderFilterReques
 			Name:       v.SignerName,
 			Mobile:     v.SignerMobile,
 			PayTime:    v.PayTime.Format("2006-01-02 15:04:05"),
+			AddTime:    v.AddTime.Format("2006-01-02 15:04:05"),
 		})
 	}
 
@@ -351,7 +352,7 @@ func (*OrderService) OrderDetail(ctx context.Context, req *proto.OrderRequest) (
 	return rsp, nil
 }
 func (*OrderService) UpdateOrderStatus(ctx context.Context, req *proto.OrderStatus) (*emptypb.Empty, error) {
-	if err := mysql.UpdateOrderStatus(req.Id, req.Status); err != nil {
+	if err := mysql.UpdateOrderStatus(req.OrderSn, req.Status); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "modify order status with primary id failed")
 	}
 

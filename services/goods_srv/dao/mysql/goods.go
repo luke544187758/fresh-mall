@@ -29,7 +29,7 @@ func GetBatchGoods(ids []int64) ([]*models.Goods, error) {
 		return nil, err
 	}
 	query = db.Rebind(query)
-	if err = db.Select(&goods, query, args); err != nil {
+	if err = db.Select(&goods, query, args...); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil
 		}

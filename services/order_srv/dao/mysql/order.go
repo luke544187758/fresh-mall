@@ -172,9 +172,9 @@ func CreateOrderInfoWithTran(o *models.OrderInfo) *models.TransactionParams {
 }
 
 //UpdateOrderStatus 修改订单状态
-func UpdateOrderStatus(id int64, status string) error {
-	sqlCmd := `UPDATE orderinfo SET status = ? WHERE id = ?`
-	_, err := db.Exec(sqlCmd, status, id)
+func UpdateOrderStatus(sn, status string) error {
+	sqlCmd := `UPDATE orderinfo SET status = ? WHERE order_sn = ?`
+	_, err := db.Exec(sqlCmd, status, sn)
 	return err
 }
 

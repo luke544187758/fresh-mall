@@ -12,9 +12,12 @@ func Init(cfg *settings.AppConfig) *gin.Engine {
 	gin.SetMode(cfg.Mode) // gin设置成发布模式
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true), middlewares.Cross())
-	//r.GET("/health", func(ctx *gin.Context) {
-	//
-	//})
+	r.GET("/health", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    http.StatusOK,
+			"message": "success",
+		})
+	})
 	v1 := r.Group("/v1")
 	InitGoodsRouter(v1)
 	InitCategoryRouter(v1)
