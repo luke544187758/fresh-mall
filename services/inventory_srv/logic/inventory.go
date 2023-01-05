@@ -54,6 +54,12 @@ func (this *InventoryService) SetInventory(ctx context.Context, req *proto.Goods
 		}
 	}
 
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
 	return &emptypb.Empty{}, nil
 }
 func (this *InventoryService) InventoryDetail(ctx context.Context, req *proto.GoodsInventoryInfo) (*proto.GoodsInventoryResponse, error) {
@@ -65,6 +71,13 @@ func (this *InventoryService) InventoryDetail(ctx context.Context, req *proto.Go
 
 	if info == nil {
 		return nil, status.Error(codes.NotFound, "inventory record is not found")
+	}
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
 	}
 
 	rsp := &proto.GoodsInventoryResponse{
@@ -114,6 +127,14 @@ func (this *InventoryService) Sell(ctx context.Context, req *proto.SellInfo) (*e
 	if err := redis.LockerRelease(c, key, val); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "an error occurred when release redis lock")
 	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return &emptypb.Empty{}, nil
 }
 func (this *InventoryService) ReBack(ctx context.Context, req *proto.SellInfo) (*emptypb.Empty, error) {
@@ -151,5 +172,13 @@ func (this *InventoryService) ReBack(ctx context.Context, req *proto.SellInfo) (
 	if err := redis.LockerRelease(c, key, val); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "an error occurred when release redis lock")
 	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return &emptypb.Empty{}, nil
 }

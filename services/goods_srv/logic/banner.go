@@ -31,6 +31,14 @@ func (g *GoodsService) BannerList(ctx context.Context, req *emptypb.Empty) (*pro
 			Url:   v.Url,
 		})
 	}
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 func (g *GoodsService) CreateBanner(ctx context.Context, req *proto.BannerRequest) (*proto.BannerResponse, error) {
@@ -50,6 +58,14 @@ func (g *GoodsService) CreateBanner(ctx context.Context, req *proto.BannerReques
 	rsp.Image = banner.Image
 	rsp.Url = banner.Url
 	rsp.Index = banner.Index
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 func (g *GoodsService) DeleteBanner(ctx context.Context, req *proto.BannerRequest) (*emptypb.Empty, error) {
@@ -63,6 +79,14 @@ func (g *GoodsService) DeleteBanner(ctx context.Context, req *proto.BannerReques
 	if err := mysql.DeleteBanner(banner.ID); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "delete the banner failed")
 	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return &emptypb.Empty{}, nil
 }
 func (g *GoodsService) UpdateBanner(ctx context.Context, req *proto.BannerRequest) (*emptypb.Empty, error) {
@@ -88,5 +112,13 @@ func (g *GoodsService) UpdateBanner(ctx context.Context, req *proto.BannerReques
 	if err := mysql.ModifyBanner(banner); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "modify the banner record failed")
 	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return &emptypb.Empty{}, nil
 }

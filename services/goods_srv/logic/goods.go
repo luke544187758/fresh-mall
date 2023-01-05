@@ -141,6 +141,14 @@ func (g *GoodsService) GoodsList(ctx context.Context, req *proto.GoodsFilterRequ
 		}
 		rsp.Data = append(rsp.Data, &res)
 	}
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 
@@ -194,6 +202,14 @@ func (g *GoodsService) BatchGetGoods(ctx context.Context, req *proto.BatchGoodsI
 		}
 		rsp.Data = append(rsp.Data, &res)
 	}
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 func (g *GoodsService) CreateGoods(ctx context.Context, req *proto.CreateGoodsInfo) (*proto.GoodsInfoResponse, error) {
@@ -272,6 +288,13 @@ func (g *GoodsService) CreateGoods(ctx context.Context, req *proto.CreateGoodsIn
 
 	//TODO 此处完善库存的设置 - 分布式事务
 
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 func (g *GoodsService) DeleteGoods(ctx context.Context, req *proto.DeleteGoodsInfo) (*emptypb.Empty, error) {
@@ -281,6 +304,14 @@ func (g *GoodsService) DeleteGoods(ctx context.Context, req *proto.DeleteGoodsIn
 		}
 		return &emptypb.Empty{}, status.Error(codes.Internal, err.Error())
 	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return &emptypb.Empty{}, nil
 }
 func (g *GoodsService) UpdateGoods(ctx context.Context, req *proto.CreateGoodsInfo) (*emptypb.Empty, error) {
@@ -327,6 +358,14 @@ func (g *GoodsService) UpdateGoods(ctx context.Context, req *proto.CreateGoodsIn
 	}
 
 	//TODO 此处完善库存的设置 - 分布式事务
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return &emptypb.Empty{}, nil
 }
 func (g *GoodsService) UpdateGoodsStatus(ctx context.Context, req *proto.GoodsStatusInfo) (*emptypb.Empty, error) {
@@ -347,6 +386,13 @@ func (g *GoodsService) UpdateGoodsStatus(ctx context.Context, req *proto.GoodsSt
 
 	if err := mysql.ModifyGoodsStatus(goodsStatus); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "update product status failed")
+	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
 	}
 
 	return &emptypb.Empty{}, nil
@@ -395,6 +441,13 @@ func (g *GoodsService) GetGoodsDetail(ctx context.Context, req *proto.GoodsInfoR
 	if brand != nil {
 		rsp.Brand.Name = brand.Name
 		rsp.Brand.Logo = brand.Logo.String
+	}
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
 	}
 
 	return rsp, nil

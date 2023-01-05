@@ -60,6 +60,14 @@ func (g *GoodsService) CategoryBrandList(ctx context.Context, req *proto.Categor
 		}
 		rsp.Data = append(rsp.Data, sub)
 	}
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 

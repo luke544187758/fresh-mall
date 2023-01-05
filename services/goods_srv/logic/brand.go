@@ -47,6 +47,14 @@ func (g *GoodsService) BrandList(ctx context.Context, req *proto.BrandFilterRequ
 			Logo: v.Logo.String,
 		})
 	}
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 func (g *GoodsService) CreateBrand(ctx context.Context, req *proto.BrandRequest) (*proto.BrandInfoResponse, error) {
@@ -75,6 +83,13 @@ func (g *GoodsService) CreateBrand(ctx context.Context, req *proto.BrandRequest)
 	rsp.Id = brand.ID
 	rsp.Name = brand.Name
 	rsp.Logo = brand.Logo.String
+
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
 	return rsp, nil
 }
 func (g *GoodsService) DeleteBrand(ctx context.Context, req *proto.BrandRequest) (*emptypb.Empty, error) {
@@ -89,6 +104,13 @@ func (g *GoodsService) DeleteBrand(ctx context.Context, req *proto.BrandRequest)
 
 	if err := mysql.DeleteBrand(req.Id); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "delete the brand record from db failed")
+	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
 	}
 
 	return &emptypb.Empty{}, nil
@@ -114,6 +136,13 @@ func (g *GoodsService) UpdateBrand(ctx context.Context, req *proto.BrandRequest)
 
 	if err := mysql.ModifyBrand(brand); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "modify the brand record from db failed")
+	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
 	}
 
 	return &emptypb.Empty{}, nil

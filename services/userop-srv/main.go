@@ -7,11 +7,12 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"luke544187758/health"
-	"luke544187758/user-srv/dao/mysql"
-	"luke544187758/user-srv/logic"
-	"luke544187758/user-srv/proto"
-	"luke544187758/user-srv/settings"
-	"luke544187758/user-srv/utils"
+	"luke544187758/userop-srv/dao/mysql"
+	"luke544187758/userop-srv/logic"
+	"luke544187758/userop-srv/pkg/snowflake"
+	"luke544187758/userop-srv/proto"
+	"luke544187758/userop-srv/settings"
+	"luke544187758/userop-srv/utils"
 	"net"
 	"os"
 	"os/signal"
@@ -33,17 +34,27 @@ func (h *HealthImpl) Watch(req *grpc_health_v1.HealthCheckRequest, w grpc_health
 }
 
 func main() {
+
+	// 初始化配置信息
 	if err := settings.Init(); err != nil {
 		fmt.Printf("load config failed, err:%v\n", err)
 		return
 	}
 
+	// 初始化mysql
 	if err := mysql.Init(settings.Conf.MySQLConfig); err != nil {
 		fmt.Printf("init mysql failed, err:%v\n", err)
 		return
 	}
 	fmt.Println("mysql init success...")
 
+	// 初始化snowflake
+	if err := snowflake.Init(settings.Conf.StartTime, settings.Conf.MachineID); err != nil {
+		fmt.Printf("init snowflake failed, err:%v\n", err)
+		return
+	}
+
+	// 随机port
 	var srvPort int
 	var err error
 	if settings.Conf.Mode == "dev" {
@@ -75,8 +86,13 @@ func main() {
 	health.Register(ccfg, scfg)
 
 	grpcServer := grpc.NewServer()
-	service := logic.NewUserService()
-	proto.RegisterUserServer(grpcServer, service)
+	userFavService := logic.NewUserFavService()
+	proto.RegisterUserFavServer(grpcServer, userFavService)
+	addrService := logic.NewAddressService()
+	proto.RegisterAddressServer(grpcServer, addrService)
+	msgService := logic.NewMessageService()
+	proto.RegisterMessageServer(grpcServer, msgService)
+
 	grpc_health_v1.RegisterHealthServer(grpcServer, &HealthImpl{})
 	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", settings.Conf.Host, srvPort))
 	if err != nil {
@@ -84,7 +100,7 @@ func main() {
 		return
 	}
 	defer listener.Close()
-	fmt.Println("user service start....", "address:", listener.Addr().String())
+	fmt.Println("user operator service start....", "address:", listener.Addr().String())
 
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
@@ -98,9 +114,9 @@ func main() {
 	<-quit
 	zap.L().Info("Shutdown Server ...")
 	if err := health.Deregister(ccfg, scfg); err != nil {
-		zap.L().Error("user service deregister failed", zap.Error(err))
+		zap.L().Error("user operator service deregister failed", zap.Error(err))
 	}
-	zap.L().Info("user service deregister success...")
+	zap.L().Info("user operator service deregister success...")
 
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

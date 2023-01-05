@@ -80,6 +80,13 @@ func (g *GoodsService) GetAllCategoryList(ctx context.Context, req *emptypb.Empt
 		rsp.JsonData = string(bytes)
 	}
 
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 
@@ -125,6 +132,13 @@ func (g *GoodsService) GetSubCategory(ctx context.Context, req *proto.CategoryLi
 		rsp.SubCategorys = append(rsp.SubCategorys, crsp)
 	}
 
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
+
 	return rsp, nil
 }
 func (g *GoodsService) CreateCategory(ctx context.Context, req *proto.CategoryInfoRequest) (*proto.CategoryInfoResponse, error) {
@@ -154,6 +168,12 @@ func (g *GoodsService) CreateCategory(ctx context.Context, req *proto.CategoryIn
 	rsp.Level = category.Level
 	rsp.IsTab = category.IsTab
 
+	if ctx.Err() == context.Canceled {
+		return nil, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
 	return rsp, nil
 }
 func (g *GoodsService) DeleteCategory(ctx context.Context, req *proto.DeleteCategoryRequest) (*emptypb.Empty, error) {
@@ -167,7 +187,14 @@ func (g *GoodsService) DeleteCategory(ctx context.Context, req *proto.DeleteCate
 	if err := mysql.DeleteCategory(req.Id); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "delete category record with id failed")
 	}
-	//TODO 根据业务需要，删除响应的category下的商品
+	//根据业务需要，删除响应的category下的商品
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
+	}
 
 	return &emptypb.Empty{}, nil
 }
@@ -194,6 +221,13 @@ func (g *GoodsService) UpdateCategory(ctx context.Context, req *proto.CategoryIn
 
 	if err := mysql.ModifyCategory(category); err != nil {
 		return &emptypb.Empty{}, status.Error(codes.Internal, "update category detail failed")
+	}
+
+	if ctx.Err() == context.Canceled {
+		return &emptypb.Empty{}, status.Error(codes.Canceled, "request is canceled")
+	}
+	if ctx.Err() == context.DeadlineExceeded {
+		return &emptypb.Empty{}, status.Error(codes.DeadlineExceeded, "deadline is exceeded")
 	}
 
 	return &emptypb.Empty{}, nil
