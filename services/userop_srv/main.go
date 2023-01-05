@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"luke544187758/health"
@@ -112,16 +111,17 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-	zap.L().Info("Shutdown Server ...")
-	if err := health.Deregister(ccfg, scfg); err != nil {
-		zap.L().Error("user operator service deregister failed", zap.Error(err))
+	fmt.Println("Shutdown Server ...")
+	if err = health.Deregister(ccfg, scfg); err != nil {
+		fmt.Println("user operator service deregister failed:", err)
+		return
 	}
-	zap.L().Info("user operator service deregister success...")
+	fmt.Println("user operator service deregister success...")
 
 	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	grpcServer.Stop()
 
-	zap.L().Info("Server exiting")
+	fmt.Println("Server exiting")
 }

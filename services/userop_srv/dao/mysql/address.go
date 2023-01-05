@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"database/sql"
-	"go.uber.org/zap"
 	"luke544187758/userop-srv/models"
 )
 
@@ -10,7 +9,6 @@ func GetAddresses(uid int64) (res []*models.Address, err error) {
 	sqlCmd := `SELECT * FROM address WHERE user_id = ?`
 	if err = db.Select(&res, sqlCmd, uid); err != nil {
 		if err == sql.ErrNoRows {
-			zap.L().Warn("there is no user in db")
 			err = nil
 		}
 		return nil, err

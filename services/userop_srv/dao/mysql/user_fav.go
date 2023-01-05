@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"database/sql"
-	"go.uber.org/zap"
 	"luke544187758/userop-srv/models"
 )
 
@@ -10,7 +9,6 @@ func GetUserFaves(uid int64) (faves []*models.UserFav, err error) {
 	sqlCmd := `SELECT user_id,goods_id FROM userfav WHERE user_id = ?`
 	if err = db.Select(&faves, sqlCmd, uid); err != nil {
 		if err == sql.ErrNoRows {
-			zap.L().Warn("there is no user in db")
 			err = nil
 		}
 		return nil, err

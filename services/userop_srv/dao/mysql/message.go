@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"database/sql"
-	"go.uber.org/zap"
 	"luke544187758/userop-srv/models"
 )
 
@@ -10,7 +9,6 @@ func GetMessages(uid int64) (messages []*models.Message, err error) {
 	sqlCmd := `SELECT id,user_id,message_type,subject,message,add_time,update_time,is_deleted FROM leavingmessages WHERE user_id = ?`
 	if err = db.Select(&messages, sqlCmd, uid); err != nil {
 		if err == sql.ErrNoRows {
-			zap.L().Warn("there is no user in db")
 			err = nil
 		}
 		return nil, err
